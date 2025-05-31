@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Ratios Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+            font-family: 'Arial', sans-serif;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background elements */
+        .bg-animation {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            mix-blend-mode: multiply;
+            filter: blur(40px);
+            opacity: 0.7;
+            animation: blob 7s infinite;
+        }
+
+        .blob1 {
+            top: -160px;
+            right: -160px;
+            width: 320px;
+            height: 320px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        }
+
+        .blob2 {
+            bottom: -160px;
+            left: -160px;
+            width: 320px;
+            height: 320px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            animation-delay: 2s;
+        }
+
+        .blob3 {
+            top: 160px;
+            left: 160px;
+            width: 320px;
+            height: 320px;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            animation-delay: 4s;
+        }
+
+        .floating-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #60a5fa, #a78bfa, #f472b6);
+            background-size: 200% 200%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            animation: shimmer 5s linear infinite;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: #d1d5db;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.5s forwards;
+        }
+
+        .decorative-dots {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease-out 1s forwards;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .dot-1 { background: #60a5fa; }
+        .dot-2 { background: #a78bfa; animation-delay: 0.2s; }
+        .dot-3 { background: #f472b6; animation-delay: 0.4s; }
+
+        .tab-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .tab-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .tab-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        .tab-content::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transform: translateX(-100%) skewX(-12deg);
+            animation: shimmer 3s linear infinite;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .calculator-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .calculator-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .calculator-card:hover .card-icon {
+            transform: scale(1.2) rotate(10deg);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .card-description {
+            font-size: 0.875rem;
+            color: #d1d5db;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #e5e7eb;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+            transform: scale(1.02);
+        }
+
+        .input-field::placeholder {
+            color: #9ca3af;
+        }
+
+        .calculate-button {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            border: none;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .calculate-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .calculate-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .calculate-button.calculating::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 1s linear infinite;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        .result-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            animation: shimmer 1.5s linear;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-label {
+            color: #d1d5db;
+            font-weight: 500;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            animation: scaleIn 0.5s ease-out 0.2s both;
+        }
+
+        .result-good { color: #4ade80; }
+        .result-fair { color: #fbbf24; }
+        .result-poor { color: #f87171; }
+
+        .result-interpretation {
+            color: #e5e7eb;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            animation: fadeInUp 0.5s ease-out 0.4s both;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-navigation {
+                gap: 0.25rem;
+            }
+            
+            .tab-button {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="bg-animation">
+        <div class="blob blob1"></div>
+        <div class="blob blob2"></div>
+        <div class="blob blob3"></div>
+    </div>
+
+    <!-- Floating particles -->
+    <div class="bg-animation" id="particles"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="main-title">Financial Ratios Calculator</h1>
+            <p class="subtitle">
+                Analyze your company's financial health with advanced ratio calculations and visual insights
+            </p>
+            <div class="decorative-dots">
+                <div class="dot dot-1"></div>
+                <div class="dot dot-2"></div>
+                <div class="dot dot-3"></div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-button active" data-tab="liquidity">
+                💧 Liquidity Ratios
+            </button>
+            <button class="tab-button" data-tab="efficiency">
+                ⚡ Efficiency Ratios
+            </button>
+            <button class="tab-button" data-tab="solvency">
+                🏛️ Solvency Ratios
+            </button>
+            <button class="tab-button" data-tab="profitability">
+                📈 Profitability Ratios
+            </button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Liquidity Ratios -->
+            <div id="liquidity" class="tab-panel">
+                <div class="calculator-grid">
+                    <!-- Current Ratio -->
+                    <div class="calculator-card">
+                        <div class="card-header">
+                            <div class="card-icon">💧</div>
+                            <div>
+                                <div class="card-title">Current Ratio</div>
+                                <div class="card-description">Measures ability to pay short-term obligations</div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Current Assets ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter current assets" data-calc="current" data-field="assets">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Current Liabilities ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter current liabilities" data-calc="current" data-field="liabilities">
+                        </div>
+                        <button class="calculate-button" data-calc="current">Calculate Ratio</button>
+                        <div class="result-card hidden" data-result="current">
+                            <div class="result-header">
+                                <span class="result-label">Result:</span>
+                                <span class="result-value" data-value="current"></span>
+                            </div>
+                            <p class="result-interpretation" data-interpretation="current"></p>
+                        </div>
+                    </div>
+
+                    <!-- Quick Ratio -->
+                    <div class="calculator-card">
+                        <div class="card-header">
+                            <div class="card-icon">⚡</div>
+                            <div>
+                                <div class="card-title">Quick Ratio</div>
+                                <div class="card-description">Measures ability to pay debts without selling inventory</div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Cash + Marketable Securities ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter liquid assets" data-calc="quick" data-field="liquid">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Accounts Receivable ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter receivables" data-calc="quick" data-field="receivables">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Current Liabilities ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter current liabilities" data-calc="quick" data-field="liabilities">
+                        </div>
+                        <button class="calculate-button" data-calc="quick">Calculate Ratio</button>
+                        <div class="result-card hidden" data-result="quick">
+                            <div class="result-header">
+                                <span class="result-label">Result:</span>
+                                <span class="result-value" data-value="quick"></span>
+                            </div>
+                            <p class="result-interpretation" data-interpretation="quick"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Efficiency Ratios -->
+            <div id="efficiency" class="tab-panel hidden">
+                <div class="calculator-grid">
+                    <!-- Asset Turnover -->
+                    <div class="calculator-card">
+                        <div class="card-header">
+                            <div class="card-icon">🔄</div>
+                            <div>
+                                <div class="card-title">Asset Turnover Ratio</div>
+                                <div class="card-description">Measures how efficiently assets generate revenue</div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Net Sales ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter net sales" data-calc="asset-turnover" data-field="sales">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Average Total Assets ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter average assets" data-calc="asset-turnover" data-field="assets">
+                        </div>
+                        <button class="calculate-button" data-calc="asset-turnover">Calculate Ratio</button>
+                        <div class="result-card hidden" data-result="asset-turnover">
+                            <div class="result-header">
+                                <span class="result-label">Result:</span>
+                                <span class="result-value" data-value="asset-turnover"></span>
+                            </div>
+                            <p class="result-interpretation" data-interpretation="asset-turnover"></p>
+                        </div>
+                    </div>
+
+                    <!-- Inventory Turnover -->
+                    <div class="calculator-card">
+                        <div class="card-header">
+                            <div class="card-icon">📦</div>
+                            <div>
+                                <div class="card-title">Inventory Turnover Ratio</div>
+                                <div class="card-description">Measures how quickly inventory is sold</div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Cost of Goods Sold ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter COGS" data-calc="inventory-turnover" data-field="cogs">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Average Inventory ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter average inventory" data-calc="inventory-turnover" data-field="inventory">
+                        </div>
+                        <button class="calculate-button" data-calc="inventory-turnover">Calculate Ratio</button>
+                        <div class="result-card hidden" data-result="inventory-turnover">
+                            <div class="result-header">
+                                <span class="result-label">Result:</span>
+                                <span class="result-value" data-value="inventory-turnover"></span>
+                            </div>
+                            <p class="result-interpretation" data-interpretation="inventory-turnover"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Solvency Ratios -->
+            <div id="solvency" class="tab-panel hidden">
+                <div class="calculator-grid">
+                    <!-- Debt to Equity -->
+                    <div class="calculator-card">
+                        <div class="card-header">
+                            <div class="card-icon">⚖️</div>
+                            <div>
+                                <div class="card-title">Debt-to-Equity Ratio</div>
+                                <div class="card-description">Measures financial leverage and risk</div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Total Debt ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter total debt" data-calc="debt-equity" data-field="debt">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Total Equity ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter total equity" data-calc="debt-equity" data-field="equity">
+                        </div>
+                        <button class="calculate-button" data-calc="debt-equity">Calculate Ratio</button>
+                        <div class="result-card hidden" data-result="debt-equity">
+                            <div class="result-header">
+                                <span class="result-label">Result:</span>
+                                <span class="result-value" data-value="debt-equity"></span>
+                            </div>
+                            <p class="result-interpretation" data-interpretation="debt-equity"></p>
+                        </div>
+                    </div>
+
+                    <!-- Interest Coverage -->
+                    <div class="calculator-card">
+                        <div class="card-header">
+                            <div class="card-icon">💰</div>
+                            <div>
+                                <div class="card-title">Interest Coverage Ratio</div>
+                                <div class="card-description">Measures ability to pay interest expenses</div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Earnings Before Interest & Tax ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter EBIT" data-calc="interest-coverage" data-field="ebit">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Interest Expense ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter interest expense" data-calc="interest-coverage" data-field="interest">
+                        </div>
+                        <button class="calculate-button" data-calc="interest-coverage">Calculate Ratio</button>
+                        <div class="result-card hidden" data-result="interest-coverage">
+                            <div class="result-header">
+                                <span class="result-label">Result:</span>
+                                <span class="result-value" data-value="interest-coverage"></span>
+                            </div>
+                            <p class="result-interpretation" data-interpretation="interest-coverage"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profitability Ratios -->
+            <div id="profitability" class="tab-panel hidden">
+                <div class="calculator-grid">
+                    <!-- ROE -->
+                    <div class="calculator-card">
+                        <div class="card-header">
+                            <div class="card-icon">📊</div>
+                            <div>
+                                <div class="card-title">Return on Equity (ROE)</div>
+                                <div class="card-description">Measures return generated on shareholders' equity</div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Net Income ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter net income" data-calc="roe" data-field="income">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Average Shareholders' Equity ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter average equity" data-calc="roe" data-field="equity">
+                        </div>
+                        <button class="calculate-button" data-calc="roe">Calculate Ratio</button>
+                        <div class="result-card hidden" data-result="roe">
+                            <div class="result-header">
+                                <span class="result-label">Result:</span>
+                                <span class="result-value" data-value="roe"></span>
+                            </div>
+                            <p class="result-interpretation" data-interpretation="roe"></p>
+                        </div>
+                    </div>
+
+                    <!-- ROA -->
+                    <div class="calculator-card">
+                        <div class="card-header">
+                            <div class="card-icon">🎯</div>
+                            <div>
+                                <div class="card-title">Return on Assets (ROA)</div>
+                                <div class="card-description">Measures how effectively assets generate profit</div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Net Income ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter net income" data-calc="roa" data-field="income">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Average Total Assets ($)</label>
+                            <input type="number" class="input-field" placeholder="Enter average assets" data-calc="roa" data-field="assets">
+                        </div>
+                        <button class="calculate-button" data-calc="roa">Calculate Ratio</button>
+                        <div class="result-card hidden" data-result="roa">
+                            <div class="result-header">
+                                <span class="result-label">Result:</span>
+                                <span class="result-value" data-value="roa"></span>
+                            </div>
+                            <p class="result-interpretation" data-interpretation="roa"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'floating-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                particle.style.animationDuration = (3 + Math.random() * 2) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Tab functionality
+        function initTabs() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabPanels = document.querySelectorAll('.tab-panel');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTab = button.dataset.tab;
+
+                    // Remove active class from all buttons
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    button.classList.add('active');
+
+                    // Hide all panels
+                    tabPanels.forEach(panel => panel.classList.add('hidden'));
+                    // Show target panel
+                    document.getElementById(targetTab).classList.remove('hidden');
+                });
+            });
+        }
+
+        // Calculator functions
+        const calculators = {
+            current: (data) => {
+                const ratio = data.assets / data.liabilities;
+                let interpretation = '';
+                let className = '';
+
+                if (ratio >= 2) {
+                    interpretation = 'Excellent liquidity position. The company can easily meet short-term obligations.';
+                    className = 'result-good';
+                } else if (ratio >= 1) {
+                    interpretation = 'Good liquidity position. The company can meet short-term obligations.';
+                    className = 'result-good';
+                } else if (ratio >= 0.5) {
+                    interpretation = 'Fair liquidity position. Monitor cash flow carefully.';
+                    className = 'result-fair';
+                } else {
+                    interpretation = 'Poor liquidity position. Immediate attention required.';
+                    className = 'result-poor';
+                }
+
+                return { ratio, interpretation, className };
+            },
+
+            quick: (data) => {
+                const ratio = (data.liquid + data.receivables) / data.liabilities;
+                let interpretation = '';
+                let className = '';
+
+                if (ratio >= 1) {
+                    interpretation = 'Excellent quick liquidity. Can pay debts without selling inventory.';
+                    className = 'result-good';
+                } else if (ratio >= 0.7) {
+                    interpretation = 'Good quick liquidity position.';
+                    className = 'result-good';
+                } else if (ratio >= 0.5) {
+                    interpretation = 'Fair quick liquidity. Consider improving cash position.';
+                    className = 'result-fair';
+                } else {
+                    interpretation = 'Poor quick liquidity. Difficulty paying immediate debts.';
+                    className = 'result-poor';
+                }
+
+                return { ratio, interpretation, className };
+            },
+
+            'asset-turnover': (data) => {
+                const ratio = data.sales / data.assets;
+                let interpretation = '';
+                let className = '';
+
+                if (ratio >= 2) {
+                    interpretation = 'Excellent asset efficiency. Very effective use of assets to generate sales.';
+                    className = 'result-good';
+                } else if (ratio >= 1) {
+                    interpretation = 'Good asset efficiency. Assets are generating reasonable sales.';
+                    className = 'result-good';
+                } else if (ratio >= 0.5) {
+                    interpretation = 'Fair asset efficiency. Room for improvement in asset utilization.';
+                    className = 'result-fair';
+                } else {
+                    interpretation = 'Poor asset efficiency. Assets are underutilized.';
+                    className = 'result-poor';
+                }
+
+                return { ratio, interpretation, className };
+            },
+
+            'inventory-turnover': (data) => {
+                const ratio = data.cogs / data.inventory;
+                let interpretation = '';
+                let className = '';
+
+                if (ratio >= 6) {
+                    interpretation = 'Excellent inventory management. Fast inventory turnover.';
+                    className = 'result-good';
+                } else if (ratio >= 4) {
+                    interpretation = 'Good inventory turnover. Efficient inventory management.';
+                    className = 'result-good';
+                } else if (ratio >= 2) {
+                    interpretation = 'Fair inventory turnover. Consider optimizing inventory levels.';
+                    className = 'result-fair';
+                } else {
+                    interpretation = 'Poor inventory turnover. Too much capital tied up in inventory.';
+                    className = 'result-poor';
+                }
+
+                return { ratio, interpretation, className };
+            },
+
+            'debt-equity': (data) => {
+                const ratio = data.debt / data.equity;
+                let interpretation = '';
+                let className = '';
+
+                if (ratio <= 0.3) {
+                    interpretation = 'Conservative debt level. Low financial risk.';
+                    className = 'result-good';
+                } else if (ratio <= 0.6) {
+                    interpretation = 'Moderate debt level. Reasonable financial leverage.';
+                    className = 'result-fair';
+                } else if (ratio <= 1) {
+                    interpretation = 'High debt level. Monitor financial risk carefully.';
+                    className = 'result-fair';
+                } else {
+                    interpretation = 'Very high debt level. Significant financial risk.';
+                    className = 'result-poor';
+                }
+
+                return { ratio, interpretation, className };
+            },
+
+            'interest-coverage': (data) => {
+                const ratio = data.ebit / data.interest;
+                let interpretation = '';
+                let className = '';
+
+                if (ratio >= 5) {
+                    interpretation = 'Excellent ability to cover interest payments. Very safe.';
+                    className = 'result-good';
+                } else if (ratio >= 2.5) {
+                    interpretation = 'Good ability to cover interest payments. Safe level.';
+                    className = 'result-good';
+                } else if (ratio >= 1.5) {
+                    interpretation = 'Fair ability to cover interest. Monitor closely.';
+                    className = 'result-fair';
+                } else {
+                    interpretation = 'Poor ability to cover interest payments. High risk.';
+                    className = 'result-poor';
+                }
+
+                return { ratio, interpretation, className };
+            },
+
+            roe: (data) => {
+                const ratio = (data.income / data.equity) * 100;
+                let interpretation = '';
+                let className = '';
+
+                if (ratio >= 15) {
+                    interpretation = 'Excellent return on equity. Very profitable for shareholders.';
+                    className = 'result-good';
+                } else if (ratio >= 10) {
+                    interpretation = 'Good return on equity. Solid performance for shareholders.';
+                    className = 'result-good';
+                } else if (ratio >= 5) {
+                    interpretation = 'Fair return on equity. Moderate performance.';
+                    className = 'result-fair';
+                } else {
+                    interpretation = 'Poor return on equity. Low profitability for shareholders.';
+                    className = 'result-poor';
+                }
+
+                return { ratio, interpretation, className };
+            },
+
+            roa: (data) => {
+                const ratio = (data.income / data.assets) * 100;
+                let interpretation = '';
+                let className = '';
+
+                if (ratio >= 10) {
+                    interpretation = 'Excellent return on assets. Very efficient use of assets.';
+                    className = 'result-good';
+                } else if (ratio >= 5) {
+                    interpretation = 'Good return on assets. Efficient asset utilization.';
+                    className = 'result-good';
+                } else if (ratio >= 2) {
+                    interpretation = 'Fair return on assets. Room for improvement.';
+                    className = 'result-fair';
+                } else {
+                    interpretation = 'Poor return on assets. Inefficient asset use.';
+                    className = 'result-poor';
+                }
+
+                return { ratio, interpretation, className };
+            }
+        };
+
+        // Calculate functionality
+        function initCalculators() {
+            const calculateButtons = document.querySelectorAll('.calculate-button');
+
+            calculateButtons.forEach(button => {
+                button.addEventListener('click', async () => {
+                    const calcType = button.dataset.calc;
+                    const inputs = document.querySelectorAll(`[data-calc="${calcType}"][data-field]`);
+                    const data = {};
+                    let hasEmptyFields = false;
+
+                    // Collect input data
+                    inputs.forEach(input => {
+                        const value = parseFloat(input.value);
+                        if (isNaN(value) || value === '') {
+                            hasEmptyFields = true;
+                        } else {
+                            data[input.dataset.field] = value;
+                        }
+                    });
+
+                    if (hasEmptyFields) {
+                        alert('Please fill in all fields with valid numbers.');
+                        return;
+                    }
+
+                    // Add loading state
+                    button.classList.add('calculating');
+                    button.innerHTML = '<span class="spinner"></span>Calculating...';
+                    button.disabled = true;
+
+                    // Simulate calculation delay
+                    await new Promise(resolve => setTimeout(resolve, 800));
+
+                    try {
+                        const result = calculators[calcType](data);
+                        
+                        // Display result
+                        const resultCard = document.querySelector(`[data-result="${calcType}"]`);
+                        const valueElement = document.querySelector(`[data-value="${calcType}"]`);
+                        const interpretationElement = document.querySelector(`[data-interpretation="${calcType}"]`);
+
+                        valueElement.textContent = result.ratio.toFixed(2) + (calcType === 'roe' || calcType === 'roa' ? '%' : '');
+                        valueElement.className = `result-value ${result.className}`;
+                        interpretationElement.innerHTML = `<strong>Interpretation:</strong> ${result.interpretation}`;
+
+                        resultCard.classList.remove('hidden');
+
+                    } catch (error) {
+                        alert('Error in calculation. Please check your inputs.');
+                    }
+
+                    // Remove loading state
+                    button.classList.remove('calculating');
+                    button.innerHTML = 'Calculate Ratio';
+                    button.disabled = false;
+                });
+            });
+        }
+
+        // Input change handlers to hide results
+        function initInputHandlers() {
+            const inputs = document.querySelectorAll('.input-field');
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    const calcType = input.dataset.calc;
+                    const resultCard = document.querySelector(`[data-result="${calcType}"]`);
+                    if (resultCard) {
+                        resultCard.classList.add('hidden');
+                    }
+                });
+            });
+        }
+
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            initTabs();
+            initCalculators();
+            initInputHandlers();
+        });
+    </script>
+</body>
+</html>
