@@ -90,7 +90,7 @@
             background: linear-gradient(135deg, #3b82f6, #06b6d4);
         }
 
-        .tab-button.efficiency.active {
+        .tab-button.leverage.active {
             background: linear-gradient(135deg, #eab308, #f97316);
         }
 
@@ -100,6 +100,10 @@
 
         .tab-button.profitability.active {
             background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        }
+
+        .tab-button.asset-quality.active {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
         }
 
         .tab-content {
@@ -374,21 +378,24 @@
         <div class="header">
             <div class="header-icon">📊</div>
             <h1 class="main-title">Financial Ratios Calculator</h1>
-            <p class="subtitle">Analyze your company's financial health with comprehensive ratio calculations across all four key categories</p>
+            <p class="subtitle">Analyze your company's financial health with comprehensive ratio calculations across all key categories</p>
         </div>
 
         <div class="tabs-container">
             <button class="tab-button liquidity active" onclick="switchTab('liquidity')">
                 💧 Liquidity Ratios
             </button>
-            <button class="tab-button efficiency" onclick="switchTab('efficiency')">
-                ⚡ Efficiency Ratios
+            <button class="tab-button leverage" onclick="switchTab('leverage')">
+                ⚖️ Leverage Ratios
             </button>
             <button class="tab-button solvency" onclick="switchTab('solvency')">
                 🛡️ Solvency Ratios
             </button>
             <button class="tab-button profitability" onclick="switchTab('profitability')">
                 📈 Profitability Ratios
+            </button>
+            <button class="tab-button asset-quality" onclick="switchTab('asset-quality')">
+                🏦 Asset Quality
             </button>
         </div>
 
@@ -399,8 +406,8 @@
                     <div class="card-header">
                         <div class="card-icon">💧</div>
                         <div>
-                            <div class="card-title">Current Ratio</div>
-                            <div class="card-description">Ability to pay short-term obligations</div>
+                            <div class="card-title">Current Ratio (CR)</div>
+                            <div class="card-description">Shows whether company has enough current assets to cover current liabilities</div>
                         </div>
                     </div>
                     <div class="formula"><strong>Formula:</strong> Current Assets ÷ Current Liabilities</div>
@@ -422,8 +429,8 @@
                     <div class="card-header">
                         <div class="card-icon">⚡</div>
                         <div>
-                            <div class="card-title">Quick Ratio</div>
-                            <div class="card-description">Ability to pay debts without selling inventory</div>
+                            <div class="card-title">Quick Ratio (QR)</div>
+                            <div class="card-description">Stricter test excluding inventory (which may be hard to liquidate)</div>
                         </div>
                     </div>
                     <div class="formula"><strong>Formula:</strong> (Current Assets - Inventory) ÷ Current Liabilities</div>
@@ -447,120 +454,97 @@
 
                 <div class="calculator-card">
                     <div class="card-header">
-                        <div class="card-icon">💰</div>
+                        <div class="card-icon">🏛️</div>
                         <div>
-                            <div class="card-title">Cash Ratio</div>
-                            <div class="card-description">Most conservative liquidity measure</div>
+                            <div class="card-title">Liquidity Coverage Ratio (LCR)</div>
+                            <div class="card-description">Ensures financial institution has enough liquid assets for 30-day stress period</div>
                         </div>
                     </div>
-                    <div class="formula"><strong>Formula:</strong> Cash & Cash Equivalents ÷ Current Liabilities</div>
+                    <div class="formula"><strong>Formula:</strong> (High-Quality Liquid Assets ÷ Total Net Cash Outflows over 30 days) × 100</div>
                     <div class="input-group">
-                        <label class="input-label">Cash & Cash Equivalents ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter cash equivalents" id="cash-equivalents">
+                        <label class="input-label">High-Quality Liquid Assets (HQLA) ($)</label>
+                        <input type="number" class="input-field" placeholder="Enter HQLA" id="hqla">
                     </div>
                     <div class="input-group">
-                        <label class="input-label">Current Liabilities ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter current liabilities" id="cash-current-liabilities">
+                        <label class="input-label">Total Net Cash Outflows over 30 days ($)</label>
+                        <input type="number" class="input-field" placeholder="Enter net cash outflows" id="net-cash-outflows">
                     </div>
-                    <button class="calculate-button" onclick="calculateCashRatio()">
+                    <button class="calculate-button" onclick="calculateLCR()">
                         🧮 Calculate Ratio
                     </button>
-                    <div id="cash-result" class="hidden"></div>
+                    <div id="lcr-result" class="hidden"></div>
+                </div>
+
+                <div class="calculator-card">
+                    <div class="card-header">
+                        <div class="card-icon">📊</div>
+                        <div>
+                            <div class="card-title">Net Stable Funding Ratio (NSFR)</div>
+                            <div class="card-description">Ensures stable funding profile over one-year horizon</div>
+                        </div>
+                    </div>
+                    <div class="formula"><strong>Formula:</strong> (Available Stable Funding ÷ Required Stable Funding) × 100</div>
+                    <div class="input-group">
+                        <label class="input-label">Available Stable Funding (ASF) ($)</label>
+                        <input type="number" class="input-field" placeholder="Enter ASF" id="asf">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Required Stable Funding (RSF) ($)</label>
+                        <input type="number" class="input-field" placeholder="Enter RSF" id="rsf">
+                    </div>
+                    <button class="calculate-button" onclick="calculateNSFR()">
+                        🧮 Calculate Ratio
+                    </button>
+                    <div id="nsfr-result" class="hidden"></div>
                 </div>
             </div>
 
-            <!-- Efficiency Ratios -->
-            <div id="efficiency" class="calculators-grid hidden">
+            <!-- Leverage Ratios -->
+            <div id="leverage" class="calculators-grid hidden">
                 <div class="calculator-card">
                     <div class="card-header">
-                        <div class="card-icon">📦</div>
+                        <div class="card-icon">📈</div>
                         <div>
-                            <div class="card-title">Inventory Turnover</div>
-                            <div class="card-description">How quickly inventory is sold</div>
+                            <div class="card-title">Debt-to-Asset Ratio (D/A)</div>
+                            <div class="card-description">Shows what portion of company's assets are financed through debt</div>
                         </div>
                     </div>
-                    <div class="formula"><strong>Formula:</strong> Cost of Goods Sold ÷ Average Inventory</div>
+                    <div class="formula"><strong>Formula:</strong> Total Debt ÷ Total Assets</div>
                     <div class="input-group">
-                        <label class="input-label">Cost of Goods Sold ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter COGS" id="cogs">
+                        <label class="input-label">Total Debt ($)</label>
+                        <input type="number" class="input-field" placeholder="Enter total debt" id="debt-asset-total-debt">
                     </div>
                     <div class="input-group">
-                        <label class="input-label">Average Inventory ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter average inventory" id="avg-inventory">
+                        <label class="input-label">Total Assets ($)</label>
+                        <input type="number" class="input-field" placeholder="Enter total assets" id="debt-asset-total-assets">
                     </div>
-                    <button class="calculate-button" onclick="calculateInventoryTurnover()">
+                    <button class="calculate-button" onclick="calculateDebtAssetRatio()">
                         🧮 Calculate Ratio
                     </button>
-                    <div id="inventory-result" class="hidden"></div>
+                    <div id="debt-asset-result" class="hidden"></div>
                 </div>
 
                 <div class="calculator-card">
                     <div class="card-header">
-                        <div class="card-icon">💳</div>
+                        <div class="card-icon">⚖️</div>
                         <div>
-                            <div class="card-title">Accounts Receivable Turnover</div>
-                            <div class="card-description">How quickly payments are collected</div>
+                            <div class="card-title">Debt-to-Equity Ratio (D/E)</div>
+                            <div class="card-description">Measures leverage - how much debt is used relative to equity</div>
                         </div>
                     </div>
-                    <div class="formula"><strong>Formula:</strong> Net Credit Sales ÷ Average Accounts Receivable</div>
+                    <div class="formula"><strong>Formula:</strong> Total Debt ÷ Total Equity</div>
                     <div class="input-group">
-                        <label class="input-label">Net Credit Sales ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter credit sales" id="credit-sales">
+                        <label class="input-label">Total Debt ($)</label>
+                        <input type="number" class="input-field" placeholder="Enter total debt" id="debt-equity-total-debt">
                     </div>
                     <div class="input-group">
-                        <label class="input-label">Average Accounts Receivable ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter average receivables" id="avg-receivables">
+                        <label class="input-label">Total Equity ($)</label>
+                        <input type="number" class="input-field" placeholder="Enter total equity" id="debt-equity-total-equity">
                     </div>
-                    <button class="calculate-button" onclick="calculateReceivablesTurnover()">
+                    <button class="calculate-button" onclick="calculateDebtEquityRatio()">
                         🧮 Calculate Ratio
                     </button>
-                    <div id="receivables-result" class="hidden"></div>
-                </div>
-
-                <div class="calculator-card">
-                    <div class="card-header">
-                        <div class="card-icon">🏪</div>
-                        <div>
-                            <div class="card-title">Accounts Payable Turnover</div>
-                            <div class="card-description">How quickly suppliers are paid</div>
-                        </div>
-                    </div>
-                    <div class="formula"><strong>Formula:</strong> COGS or Purchases ÷ Average Accounts Payable</div>
-                    <div class="input-group">
-                        <label class="input-label">COGS or Purchases ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter COGS/purchases" id="cogs-purchases">
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Average Accounts Payable ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter average payables" id="avg-payables">
-                    </div>
-                    <button class="calculate-button" onclick="calculatePayablesTurnover()">
-                        🧮 Calculate Ratio
-                    </button>
-                    <div id="payables-result" class="hidden"></div>
-                </div>
-
-                <div class="calculator-card">
-                    <div class="card-header">
-                        <div class="card-icon">🔄</div>
-                        <div>
-                            <div class="card-title">Asset Turnover</div>
-                            <div class="card-description">How efficiently assets generate revenue</div>
-                        </div>
-                    </div>
-                    <div class="formula"><strong>Formula:</strong> Net Sales ÷ Average Total Assets</div>
-                    <div class="input-group">
-                        <label class="input-label">Net Sales ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter net sales" id="net-sales">
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Average Total Assets ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter average assets" id="avg-assets">
-                    </div>
-                    <button class="calculate-button" onclick="calculateAssetTurnover()">
-                        🧮 Calculate Ratio
-                    </button>
-                    <div id="asset-result" class="hidden"></div>
+                    <div id="debt-equity-result" class="hidden"></div>
                 </div>
             </div>
 
@@ -568,79 +552,10 @@
             <div id="solvency" class="calculators-grid hidden">
                 <div class="calculator-card">
                     <div class="card-header">
-                        <div class="card-icon">⚖️</div>
-                        <div>
-                            <div class="card-title">Debt-to-Equity Ratio</div>
-                            <div class="card-description">Financial leverage and risk</div>
-                        </div>
-                    </div>
-                    <div class="formula"><strong>Formula:</strong> Total Liabilities ÷ Shareholders' Equity</div>
-                    <div class="input-group">
-                        <label class="input-label">Total Liabilities ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter total liabilities" id="total-liabilities">
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Shareholders' Equity ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter equity" id="shareholders-equity">
-                    </div>
-                    <button class="calculate-button" onclick="calculateDebtEquity()">
-                        🧮 Calculate Ratio
-                    </button>
-                    <div id="debt-equity-result" class="hidden"></div>
-                </div>
-
-                <div class="calculator-card">
-                    <div class="card-header">
-                        <div class="card-icon">📊</div>
-                        <div>
-                            <div class="card-title">Debt Ratio</div>
-                            <div class="card-description">Percentage of assets financed by debt</div>
-                        </div>
-                    </div>
-                    <div class="formula"><strong>Formula:</strong> Total Liabilities ÷ Total Assets</div>
-                    <div class="input-group">
-                        <label class="input-label">Total Liabilities ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter total liabilities" id="debt-total-liabilities">
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Total Assets ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter total assets" id="total-assets">
-                    </div>
-                    <button class="calculate-button" onclick="calculateDebtRatio()">
-                        🧮 Calculate Ratio
-                    </button>
-                    <div id="debt-ratio-result" class="hidden"></div>
-                </div>
-
-                <div class="calculator-card">
-                    <div class="card-header">
-                        <div class="card-icon">🏛️</div>
-                        <div>
-                            <div class="card-title">Equity Ratio</div>
-                            <div class="card-description">Portion of assets funded by equity</div>
-                        </div>
-                    </div>
-                    <div class="formula"><strong>Formula:</strong> Shareholders' Equity ÷ Total Assets</div>
-                    <div class="input-group">
-                        <label class="input-label">Shareholders' Equity ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter equity" id="equity-shareholders-equity">
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Total Assets ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter total assets" id="equity-total-assets">
-                    </div>
-                    <button class="calculate-button" onclick="calculateEquityRatio()">
-                        🧮 Calculate Ratio
-                    </button>
-                    <div id="equity-ratio-result" class="hidden"></div>
-                </div>
-
-                <div class="calculator-card">
-                    <div class="card-header">
                         <div class="card-icon">💎</div>
                         <div>
-                            <div class="card-title">Interest Coverage Ratio</div>
-                            <div class="card-description">Ability to pay interest expenses</div>
+                            <div class="card-title">Interest Coverage Ratio (ICR)</div>
+                            <div class="card-description">Shows how easily company can pay interest on outstanding debt</div>
                         </div>
                     </div>
                     <div class="formula"><strong>Formula:</strong> EBIT ÷ Interest Expense</div>
@@ -657,39 +572,43 @@
                     </button>
                     <div id="interest-coverage-result" class="hidden"></div>
                 </div>
+
+                <div class="calculator-card">
+                    <div class="card-header">
+                        <div class="card-icon">🏦</div>
+                        <div>
+                            <div class="card-title">Capital Adequacy Ratio (CAR)</div>
+                            <div class="card-description">Ensures banks can absorb reasonable loss and protect depositors</div>
+                        </div>
+                    </div>
+                    <div class="formula"><strong>Formula:</strong> (Tier 1 Capital + Tier 2 Capital) ÷ Risk-Weighted Assets</div>
+                    <div class="input-group">
+                        <label class="input-label">Tier 1 Capital ($)</label>
+                        <input type="number" class="input-field" placeholder="Enter Tier 1 capital" id="tier1-capital">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Tier 2 Capital ($)</label>
+                        <input type="number" class="input-field" placeholder="Enter Tier 2 capital" id="tier2-capital">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Risk-Weighted Assets ($)</label>
+                        <input type="number" class="input-field" placeholder="Enter risk-weighted assets" id="risk-weighted-assets">
+                    </div>
+                    <button class="calculate-button" onclick="calculateCAR()">
+                        🧮 Calculate Ratio
+                    </button>
+                    <div id="car-result" class="hidden"></div>
+                </div>
             </div>
 
             <!-- Profitability Ratios -->
             <div id="profitability" class="calculators-grid hidden">
                 <div class="calculator-card">
                     <div class="card-header">
-                        <div class="card-icon">📈</div>
-                        <div>
-                            <div class="card-title">Operating Profit Margin</div>
-                            <div class="card-description">Operational efficiency measure</div>
-                        </div>
-                    </div>
-                    <div class="formula"><strong>Formula:</strong> (Operating Income ÷ Revenue) × 100</div>
-                    <div class="input-group">
-                        <label class="input-label">Operating Income ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter operating income" id="operating-income">
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">Revenue ($)</label>
-                        <input type="number" class="input-field" placeholder="Enter revenue" id="revenue">
-                    </div>
-                    <button class="calculate-button" onclick="calculateOperatingMargin()">
-                        🧮 Calculate Ratio
-                    </button>
-                    <div id="operating-margin-result" class="hidden"></div>
-                </div>
-
-                <div class="calculator-card">
-                    <div class="card-header">
                         <div class="card-icon">💯</div>
                         <div>
-                            <div class="card-title">Net Profit Margin</div>
-                            <div class="card-description">Final profitability after all expenses</div>
+                            <div class="card-title">Net Profit Margin (NPM)</div>
+                            <div class="card-description">Final profitability after all expenses, interest, and taxes</div>
                         </div>
                     </div>
                     <div class="formula"><strong>Formula:</strong> (Net Income ÷ Revenue) × 100</div>
@@ -712,7 +631,7 @@
                         <div class="card-icon">🎯</div>
                         <div>
                             <div class="card-title">Return on Assets (ROA)</div>
-                            <div class="card-description">How effectively assets generate profit</div>
+                            <div class="card-description">Measures how effectively company uses assets to generate profit</div>
                         </div>
                     </div>
                     <div class="formula"><strong>Formula:</strong> (Net Income ÷ Average Total Assets) × 100</div>
@@ -735,7 +654,7 @@
                         <div class="card-icon">👑</div>
                         <div>
                             <div class="card-title">Return on Equity (ROE)</div>
-                            <div class="card-description">Return generated on shareholders' equity</div>
+                            <div class="card-description">Measures return shareholders get on their investment</div>
                         </div>
                     </div>
                     <div class="formula"><strong>Formula:</strong> (Net Income ÷ Average Shareholders' Equity) × 100</div>
@@ -753,13 +672,39 @@
                     <div id="roe-result" class="hidden"></div>
                 </div>
             </div>
+
+            <!-- Asset Quality -->
+            <div id="asset-quality" class="calculators-grid hidden">
+                <div class="calculator-card">
+                    <div class="card-header">
+                        <div class="card-icon">🏦</div>
+                        <div>
+                            <div class="card-title">Non-Performing Loan (NPL) Ratio</div>
+                            <div class="card-description">Credit risk associated with loan portfolio - loans not making scheduled payments</div>
+                        </div>
+                    </div>
+                    <div class="formula"><strong>Formula:</strong> (Non-Performing Loans ÷ Total Loans) × 100</div>
+                    <div class="input-group">
+                        <label class="input-label">Non-Performing Loans ($)</label>
+                        <input type="number" class="input-field" placeholder="Enter non-performing loans" id="npl-loans">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Total Loans ($)</label>
+                        <input type="number" class="input-field" placeholder="Enter total loans" id="total-loans">
+                    </div>
+                    <button class="calculate-button" onclick="calculateNPL()">
+                        🧮 Calculate Ratio
+                    </button>
+                    <div id="npl-result" class="hidden"></div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
         function switchTab(tabName) {
             // Hide all tab contents
-            const tabs = ['liquidity', 'efficiency', 'solvency', 'profitability'];
+            const tabs = ['liquidity', 'leverage', 'solvency', 'profitability', 'asset-quality'];
             tabs.forEach(tab => {
                 document.getElementById(tab).classList.add('hidden');
                 document.querySelector(`.tab-button.${tab}`).classList.remove('active');
@@ -798,18 +743,12 @@
             const ratio = currentAssets / currentLiabilities;
             let status, interpretation;
             
-            if (ratio >= 2) {
-                status = 'excellent';
-                interpretation = 'Excellent liquidity position. The company can easily meet short-term obligations.';
-            } else if (ratio >= 1) {
+            if (ratio > 1) {
                 status = 'good';
-                interpretation = 'Good liquidity position. The company can meet short-term obligations.';
-            } else if (ratio >= 0.5) {
-                status = 'fair';
-                interpretation = 'Fair liquidity position. Monitor cash flow carefully.';
+                interpretation = 'Generally healthy. Company has enough current assets to cover current liabilities.';
             } else {
                 status = 'poor';
-                interpretation = 'Poor liquidity position. Immediate attention required.';
+                interpretation = 'Potential liquidity risk. Company may struggle to meet short-term obligations.';
             }
             
             displayResult('current-result', ratio, interpretation, status);
@@ -817,17 +756,17 @@
 
         function calculateQuickRatio() {
             const currentAssets = parseFloat(document.getElementById('quick-current-assets').value);
-            const inventory = parseFloat(document.getElementById('quick-inventory').value);
+            const inventory = parseFloat(document.getElementById('quick-inventory').value) || 0;
             const currentLiabilities = parseFloat(document.getElementById('quick-current-liabilities').value);
             
-            if (!currentAssets || !currentLiabilities || inventory === undefined) return;
+            if (!currentAssets || !currentLiabilities) return;
             
             const ratio = (currentAssets - inventory) / currentLiabilities;
             let status, interpretation;
             
             if (ratio >= 1) {
                 status = 'excellent';
-                interpretation = 'Excellent quick liquidity. Can pay debts without selling inventory.';
+                interpretation = 'Strong short-term liquidity. Can pay debts without selling inventory.';
             } else if (ratio >= 0.7) {
                 status = 'good';
                 interpretation = 'Good quick liquidity position.';
@@ -842,216 +781,94 @@
             displayResult('quick-result', ratio, interpretation, status);
         }
 
-        function calculateCashRatio() {
-            const cashEquivalents = parseFloat(document.getElementById('cash-equivalents').value);
-            const currentLiabilities = parseFloat(document.getElementById('cash-current-liabilities').value);
+        function calculateLCR() {
+            const hqla = parseFloat(document.getElementById('hqla').value);
+            const netCashOutflows = parseFloat(document.getElementById('net-cash-outflows').value);
             
-            if (!cashEquivalents || !currentLiabilities) return;
+            if (!hqla || !netCashOutflows) return;
             
-            const ratio = cashEquivalents / currentLiabilities;
+            const ratio = (hqla / netCashOutflows) * 100;
             let status, interpretation;
             
-            if (ratio >= 0.5) {
+            if (ratio >= 100) {
                 status = 'excellent';
-                interpretation = 'Excellent cash position. Very strong ability to pay immediate obligations.';
-            } else if (ratio >= 0.2) {
-                status = 'good';
-                interpretation = 'Good cash position for immediate payments.';
-            } else if (ratio >= 0.1) {
-                status = 'fair';
-                interpretation = 'Fair cash position. Consider maintaining higher cash reserves.';
+                interpretation = 'Institution has sufficient liquidity to cover short-term obligations under stress conditions.';
             } else {
                 status = 'poor';
-                interpretation = 'Poor cash position. Very limited ability to pay immediate obligations.';
+                interpretation = 'Liquidity shortfall. Bank may not have enough liquid assets to meet short-term obligations in a crisis.';
             }
             
-            displayResult('cash-result', ratio, interpretation, status);
+            displayResult('lcr-result', ratio, interpretation, status, true);
         }
 
-        // Efficiency Ratios
-        function calculateInventoryTurnover() {
-            const cogs = parseFloat(document.getElementById('cogs').value);
-            const avgInventory = parseFloat(document.getElementById('avg-inventory').value);
+        function calculateNSFR() {
+            const asf = parseFloat(document.getElementById('asf').value);
+            const rsf = parseFloat(document.getElementById('rsf').value);
             
-            if (!cogs || !avgInventory) return;
+            if (!asf || !rsf) return;
             
-            const ratio = cogs / avgInventory;
+            const ratio = (asf / rsf) * 100;
             let status, interpretation;
             
-            if (ratio >= 6) {
+            if (ratio >= 100) {
                 status = 'excellent';
-                interpretation = 'Excellent inventory management. Fast inventory turnover.';
-            } else if (ratio >= 4) {
-                status = 'good';
-                interpretation = 'Good inventory turnover. Efficient inventory management.';
-            } else if (ratio >= 2) {
-                status = 'fair';
-                interpretation = 'Fair inventory turnover. Consider optimizing inventory levels.';
+                interpretation = 'Bank has sufficient stable funding to support long-term assets and activities.';
             } else {
                 status = 'poor';
-                interpretation = 'Poor inventory turnover. Too much capital tied up in inventory.';
+                interpretation = 'Potential liquidity risk. Bank may be relying too heavily on short-term funding.';
             }
             
-            displayResult('inventory-result', ratio, interpretation, status);
+            displayResult('nsfr-result', ratio, interpretation, status, true);
         }
 
-        function calculateReceivablesTurnover() {
-            const creditSales = parseFloat(document.getElementById('credit-sales').value);
-            const avgReceivables = parseFloat(document.getElementById('avg-receivables').value);
+        // Leverage Ratios
+        function calculateDebtAssetRatio() {
+            const totalDebt = parseFloat(document.getElementById('debt-asset-total-debt').value);
+            const totalAssets = parseFloat(document.getElementById('debt-asset-total-assets').value);
             
-            if (!creditSales || !avgReceivables) return;
+            if (!totalDebt || !totalAssets) return;
             
-            const ratio = creditSales / avgReceivables;
-            let status, interpretation;
-            
-            if (ratio >= 12) {
-                status = 'excellent';
-                interpretation = 'Excellent collection efficiency. Very fast payment collection.';
-            } else if (ratio >= 8) {
-                status = 'good';
-                interpretation = 'Good collection efficiency. Reasonable payment terms.';
-            } else if (ratio >= 4) {
-                status = 'fair';
-                interpretation = 'Fair collection efficiency. Consider improving collection processes.';
-            } else {
-                status = 'poor';
-                interpretation = 'Poor collection efficiency. Too much capital tied up in receivables.';
-            }
-            
-            displayResult('receivables-result', ratio, interpretation, status);
-        }
-
-        function calculatePayablesTurnover() {
-            const cogsPurchases = parseFloat(document.getElementById('cogs-purchases').value);
-            const avgPayables = parseFloat(document.getElementById('avg-payables').value);
-            
-            if (!cogsPurchases || !avgPayables) return;
-            
-            const ratio = cogsPurchases / avgPayables;
-            let status, interpretation;
-            
-            if (ratio <= 6) {
-                status = 'excellent';
-                interpretation = 'Excellent payment management. Good use of supplier credit.';
-            } else if (ratio <= 10) {
-                status = 'good';
-                interpretation = 'Good payment management. Reasonable payment timing.';
-            } else if (ratio <= 15) {
-                status = 'fair';
-                interpretation = 'Fair payment management. Consider optimizing payment terms.';
-            } else {
-                status = 'poor';
-                interpretation = 'Poor payment management. May strain supplier relationships.';
-            }
-            
-            displayResult('payables-result', ratio, interpretation, status);
-        }
-
-        function calculateAssetTurnover() {
-            const netSales = parseFloat(document.getElementById('net-sales').value);
-            const avgAssets = parseFloat(document.getElementById('avg-assets').value);
-            
-            if (!netSales || !avgAssets) return;
-            
-            const ratio = netSales / avgAssets;
-            let status, interpretation;
-            
-            if (ratio >= 2) {
-                status = 'excellent';
-                interpretation = 'Excellent asset efficiency. Very effective use of assets to generate sales.';
-            } else if (ratio >= 1) {
-                status = 'good';
-                interpretation = 'Good asset efficiency. Assets are generating reasonable sales.';
-            } else if (ratio >= 0.5) {
-                status = 'fair';
-                interpretation = 'Fair asset efficiency. Room for improvement in asset utilization.';
-            } else {
-                status = 'poor';
-                interpretation = 'Poor asset efficiency. Assets are underutilized.';
-            }
-            
-            displayResult('asset-result', ratio, interpretation, status);
-        }
-
-        // Solvency Ratios
-        function calculateDebtEquity() {
-            const totalLiabilities = parseFloat(document.getElementById('total-liabilities').value);
-            const shareholdersEquity = parseFloat(document.getElementById('shareholders-equity').value);
-            
-            if (!totalLiabilities || !shareholdersEquity) return;
-            
-            const ratio = totalLiabilities / shareholdersEquity;
+            const ratio = totalDebt / totalAssets;
             let status, interpretation;
             
             if (ratio <= 0.3) {
                 status = 'excellent';
-                interpretation = 'Conservative debt level. Very low financial risk.';
+                interpretation = 'More assets financed through equity (less risky). Conservative financing approach.';
             } else if (ratio <= 0.6) {
                 status = 'good';
-                interpretation = 'Moderate debt level. Reasonable financial leverage.';
-            } else if (ratio <= 1) {
+                interpretation = 'Moderate debt financing. Balanced capital structure.';
+            } else if (ratio < 1) {
                 status = 'fair';
-                interpretation = 'High debt level. Monitor financial risk carefully.';
+                interpretation = 'High debt dependency. Monitor financial risk carefully.';
             } else {
                 status = 'poor';
-                interpretation = 'Very high debt level. Significant financial risk.';
+                interpretation = 'Heavily dependent on debt (more risky). Potential financial stress.';
+            }
+            
+            displayResult('debt-asset-result', ratio, interpretation, status);
+        }
+
+        function calculateDebtEquityRatio() {
+            const totalDebt = parseFloat(document.getElementById('debt-equity-total-debt').value);
+            const totalEquity = parseFloat(document.getElementById('debt-equity-total-equity').value);
+            
+            if (!totalDebt || !totalEquity) return;
+            
+            const ratio = totalDebt / totalEquity;
+            let status, interpretation;
+            
+            if (ratio < 1) {
+                status = 'good';
+                interpretation = 'Company uses more equity than debt (conservative financing).';
+            } else {
+                status = 'fair';
+                interpretation = 'Company relies more on debt than equity (aggressive financing).';
             }
             
             displayResult('debt-equity-result', ratio, interpretation, status);
         }
 
-        function calculateDebtRatio() {
-            const totalLiabilities = parseFloat(document.getElementById('debt-total-liabilities').value);
-            const totalAssets = parseFloat(document.getElementById('total-assets').value);
-            
-            if (!totalLiabilities || !totalAssets) return;
-            
-            const ratio = (totalLiabilities / totalAssets) * 100;
-            let status, interpretation;
-            
-            if (ratio <= 30) {
-                status = 'excellent';
-                interpretation = 'Conservative financing. Low dependence on debt.';
-            } else if (ratio <= 50) {
-                status = 'good';
-                interpretation = 'Moderate debt financing. Balanced capital structure.';
-            } else if (ratio <= 70) {
-                status = 'fair';
-                interpretation = 'High debt financing. Monitor leverage carefully.';
-            } else {
-                status = 'poor';
-                interpretation = 'Very high debt financing. Potential financial stress.';
-            }
-            
-            displayResult('debt-ratio-result', ratio, interpretation, status, true);
-        }
-
-        function calculateEquityRatio() {
-            const shareholdersEquity = parseFloat(document.getElementById('equity-shareholders-equity').value);
-            const totalAssets = parseFloat(document.getElementById('equity-total-assets').value);
-            
-            if (!shareholdersEquity || !totalAssets) return;
-            
-            const ratio = (shareholdersEquity / totalAssets) * 100;
-            let status, interpretation;
-            
-            if (ratio >= 70) {
-                status = 'excellent';
-                interpretation = 'Excellent equity financing. Very low reliance on debt.';
-            } else if (ratio >= 50) {
-                status = 'good';
-                interpretation = 'Good equity financing. Balanced capital structure.';
-            } else if (ratio >= 30) {
-                status = 'fair';
-                interpretation = 'Fair equity financing. Consider strengthening equity base.';
-            } else {
-                status = 'poor';
-                interpretation = 'Poor equity financing. Heavy reliance on debt.';
-            }
-            
-            displayResult('equity-ratio-result', ratio, interpretation, status, true);
-        }
-
+        // Solvency Ratios
         function calculateInterestCoverage() {
             const ebit = parseFloat(document.getElementById('ebit').value);
             const interestExpense = parseFloat(document.getElementById('interest-expense').value);
@@ -1061,50 +878,42 @@
             const ratio = ebit / interestExpense;
             let status, interpretation;
             
-            if (ratio >= 5) {
-                status = 'excellent';
-                interpretation = 'Excellent ability to cover interest payments. Very safe.';
-            } else if (ratio >= 2.5) {
+            if (ratio > 1) {
                 status = 'good';
-                interpretation = 'Good ability to cover interest payments. Safe level.';
-            } else if (ratio >= 1.5) {
-                status = 'fair';
-                interpretation = 'Fair ability to cover interest. Monitor closely.';
+                interpretation = 'Company earns significantly more than needed to cover interest payments.';
             } else {
                 status = 'poor';
-                interpretation = 'Poor ability to cover interest payments. High risk.';
+                interpretation = 'Company is not generating enough to cover interest payments — a red flag.';
             }
             
             displayResult('interest-coverage-result', ratio, interpretation, status);
         }
 
-        // Profitability Ratios
-        function calculateOperatingMargin() {
-            const operatingIncome = parseFloat(document.getElementById('operating-income').value);
-            const revenue = parseFloat(document.getElementById('revenue').value);
+        function calculateCAR() {
+            const tier1Capital = parseFloat(document.getElementById('tier1-capital').value);
+            const tier2Capital = parseFloat(document.getElementById('tier2-capital').value);
+            const riskWeightedAssets = parseFloat(document.getElementById('risk-weighted-assets').value);
             
-            if (!operatingIncome || !revenue) return;
+            if (!tier1Capital || !tier2Capital || !riskWeightedAssets) return;
             
-            const ratio = (operatingIncome / revenue) * 100;
+            const ratio = (tier1Capital + tier2Capital) / riskWeightedAssets;
             let status, interpretation;
             
-            if (ratio >= 20) {
+            if (ratio >= 0.12) {
                 status = 'excellent';
-                interpretation = 'Excellent operational efficiency. Very high operating profitability.';
-            } else if (ratio >= 10) {
+                interpretation = 'Bank is well-capitalized and better able to withstand financial stress.';
+            } else if (ratio >= 0.08) {
                 status = 'good';
-                interpretation = 'Good operational efficiency. Solid operating performance.';
-            } else if (ratio >= 5) {
-                status = 'fair';
-                interpretation = 'Fair operational efficiency. Room for cost optimization.';
+                interpretation = 'Adequate capital adequacy. Meets regulatory requirements.';
             } else {
                 status = 'poor';
-                interpretation = 'Poor operational efficiency. Significant cost management needed.';
+                interpretation = 'Higher risk of insolvency and potential regulatory trouble.';
             }
             
-            displayResult('operating-margin-result', ratio, interpretation, status, true);
+            displayResult('car-result', ratio, interpretation, status);
         }
 
+        // Profitability Ratios
         function calculateNetMargin() {
             const netIncome = parseFloat(document.getElementById('net-income').value);
             const revenue = parseFloat(document.getElementById('net-revenue').value);
@@ -1116,7 +925,7 @@
             
             if (ratio >= 15) {
                 status = 'excellent';
-                interpretation = 'Excellent net profitability. Very efficient overall operations.';
+                interpretation = 'Excellent net profitability. Shows how much of each dollar of revenue becomes actual profit.';
             } else if (ratio >= 8) {
                 status = 'good';
                 interpretation = 'Good net profitability. Solid bottom-line performance.';
@@ -1142,7 +951,7 @@
             
             if (ratio >= 10) {
                 status = 'excellent';
-                interpretation = 'Excellent return on assets. Very efficient use of assets.';
+                interpretation = 'More efficient use of assets. Excellent return on assets.';
             } else if (ratio >= 5) {
                 status = 'good';
                 interpretation = 'Good return on assets. Efficient asset utilization.';
@@ -1166,21 +975,42 @@
             const ratio = (netIncome / avgEquity) * 100;
             let status, interpretation;
             
-            if (ratio >= 15) {
+            if (ratio > 15) {
                 status = 'excellent';
-                interpretation = 'Excellent return on equity. Very profitable for shareholders.';
+                interpretation = 'Usually considered strong. Company generates 15+ cents of profit for every $1 of equity.';
             } else if (ratio >= 10) {
                 status = 'good';
-                interpretation = 'Good return on equity. Solid performance for shareholders.';
-            } else if (ratio >= 5) {
-                status = 'fair';
-                interpretation = 'Fair return on equity. Moderate performance.';
+                interpretation = 'Average or healthy performance, depending on industry.';
             } else {
                 status = 'poor';
-                interpretation = 'Poor return on equity. Low profitability for shareholders.';
+                interpretation = 'May indicate inefficiency, weak profitability, or poor management.';
             }
             
             displayResult('roe-result', ratio, interpretation, status, true);
+        }
+
+        // Asset Quality
+        function calculateNPL() {
+            const nplLoans = parseFloat(document.getElementById('npl-loans').value);
+            const totalLoans = parseFloat(document.getElementById('total-loans').value);
+            
+            if (!nplLoans || !totalLoans) return;
+            
+            const ratio = (nplLoans / totalLoans) * 100;
+            let status, interpretation;
+            
+            if (ratio < 2) {
+                status = 'excellent';
+                interpretation = 'Strong asset quality, good credit management.';
+            } else if (ratio < 5) {
+                status = 'fair';
+                interpretation = 'Acceptable asset quality. Monitor credit risk.';
+            } else {
+                status = 'poor';
+                interpretation = 'Poor asset quality, rising credit risk, potential losses.';
+            }
+            
+            displayResult('npl-result', ratio, interpretation, status, true);
         }
     </script>
 </body>
